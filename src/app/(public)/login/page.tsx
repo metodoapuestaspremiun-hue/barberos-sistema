@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function LoginPage() {
   const [pin, setPin] = useState("");
@@ -53,7 +54,7 @@ export default function LoginPage() {
         // Redirigir al panel de control
         setTimeout(() => {
           router.push("/panel");
-        }, 1000);
+        }, 800);
       } else {
         setStatus("error");
         setMessage(data.error || "El código PIN ingresado es incorrecto.");
@@ -67,10 +68,10 @@ export default function LoginPage() {
   // Mostrar pantalla de carga mientras se verifica la sesión
   if (status === "checking") {
     return (
-      <main className="min-h-screen bg-[#0a0807] text-[#f3ece1] flex items-center justify-center p-6">
+      <main className="min-h-[80vh] flex items-center justify-center p-6 bg-[#09090b]">
         <div className="text-center space-y-4">
-          <span className="inline-block w-8 h-8 border-2 border-[#d97644] border-t-transparent rounded-full animate-spin" />
-          <p className="font-mono text-xs tracking-[0.2em] uppercase text-[#5c554c]">
+          <span className="inline-block w-8 h-8 border-2 border-zinc-400 border-t-transparent rounded-full animate-spin" />
+          <p className="font-mono text-xs tracking-[0.2em] uppercase text-zinc-400">
             Verificando sesión...
           </p>
         </div>
@@ -79,22 +80,35 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#0a0807] text-[#f3ece1] flex items-center justify-center p-6">
-      <div className="w-full max-w-md p-10 bg-[#131110] border border-[#2a2520] relative font-mono">
-        {/* Decoración superior */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-[#d97644]" />
+    <main className="min-h-[80vh] flex items-center justify-center p-4 sm:p-6 bg-[#09090b]">
+      <div className="w-full max-w-md p-8 sm:p-10 bg-[#121214]/95 border border-zinc-800/80 rounded-2xl shadow-2xl relative overflow-hidden backdrop-blur-2xl">
+        {/* Halo de luz plateado superior */}
+        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-64 h-32 bg-zinc-400/10 rounded-full blur-3xl pointer-events-none" />
 
-        <h2 className="font-display text-4xl font-light mb-4 text-[#f3ece1] text-center">
-          BarberOS
-        </h2>
-        <p className="font-mono text-xs tracking-wider text-[#5c554c] text-center mb-8 uppercase">
-          Acceso rápido por PIN
-        </p>
+        {/* Logo e Identidad */}
+        <div className="flex flex-col items-center text-center mb-8 relative z-10">
+          <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-2xl border border-zinc-700/50 mb-4 bg-zinc-900 p-1 flex items-center justify-center">
+            <Image
+              src="/logos/negocios_icon_192.png"
+              alt="NegociOS Icon"
+              width={76}
+              height={76}
+              className="w-full h-full object-cover rounded-xl"
+              priority
+            />
+          </div>
+          <h2 className="font-display text-3xl sm:text-4xl font-light text-zinc-100 tracking-tight">
+            NegociOS
+          </h2>
+          <p className="font-mono text-[11px] tracking-[0.25em] text-zinc-400 uppercase mt-1.5">
+            Acceso al Panel de Control
+          </p>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
           <div>
-            <label className="block font-mono text-xs tracking-[0.2em] uppercase text-[#5c554c] mb-2">
-              Código PIN de Barbería
+            <label className="block font-mono text-[11px] tracking-[0.2em] uppercase text-zinc-400 mb-2">
+              Código PIN de Acceso
             </label>
             <input
               type="text"
@@ -102,14 +116,17 @@ export default function LoginPage() {
               onChange={(e) => setPin(e.target.value)}
               placeholder="Ej. 123456"
               disabled={status === "loading"}
-              className="w-full px-4 py-3 font-mono text-lg text-center tracking-[0.35em] bg-[#0a0807] border border-[#2a2520] text-[#f3ece1] placeholder-[#5c554c] focus:outline-none focus:border-[#d97644]"
+              autoFocus
+              className="w-full px-4 py-3.5 font-mono text-xl text-center tracking-[0.35em] bg-zinc-950/90 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-zinc-300 focus:ring-1 focus:ring-zinc-300 transition-all shadow-inner"
             />
           </div>
 
           {message && (
             <p
-              className={`font-display italic text-sm text-center ${
-                status === "success" ? "text-green-400" : "text-[#d97644]"
+              className={`font-mono text-xs text-center p-2.5 rounded-lg ${
+                status === "success"
+                  ? "bg-emerald-950/50 text-emerald-400 border border-emerald-800"
+                  : "bg-red-950/50 text-red-400 border border-red-800"
               }`}
             >
               {message}
@@ -119,7 +136,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={status === "loading"}
-            className="w-full py-4 font-mono text-xs tracking-[0.2em] uppercase text-[#0a0807] bg-[#d97644] hover:bg-[#e8854f] transition-all disabled:opacity-50 font-bold"
+            className="w-full py-3.5 font-mono text-xs tracking-[0.2em] uppercase text-zinc-950 bg-zinc-100 hover:bg-white active:bg-zinc-200 rounded-xl transition-all shadow-md shadow-white/10 disabled:opacity-50 font-bold"
           >
             {status === "loading" ? "VERIFICANDO..." : "INGRESAR AL PANEL"}
           </button>

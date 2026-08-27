@@ -4,6 +4,7 @@ import { sendWhatsAppMessage } from "@/lib/evolution";
 import { generateBoxCode } from "@/lib/boxcode";
 import webpush from "web-push";
 import { getEcuadorHour } from "@/lib/time-ec";
+import { getTenantTerms } from "@/lib/tenant-dictionary";
 
 // Configurar credenciales VAPID globales para el envío de notificaciones push
 if (process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
@@ -214,9 +215,15 @@ async function processMessage(payload: WebhookPayload) {
       })
       .then((subs) => {
         const customerName = customer?.name || "Cliente Frecuente";
+        const terms = getTenantTerms(barbershop.vertical);
+        const icon = (barbershop.vertical || "").toUpperCase() === "GABINETE" || (barbershop.vertical || "").toUpperCase() === "SALON"
+          ? "💅"
+          : (barbershop.vertical || "").toUpperCase() === "NEGOCIO"
+          ? "🏪"
+          : "✂️";
         const pushPayload = JSON.stringify({
-          title: "✂️ ¡Nuevo Check-In!",
-          body: `El cliente "${customerName}" (+${whatsapp}) ha solicitado registrar su corte.`,
+          title: `${icon} ¡Nuevo Check-In!`,
+          body: `El cliente "${customerName}" (+${whatsapp}) ha solicitado registrar su ${terms.rewardUnitSingular}.`,
           url: "/panel",
         });
 

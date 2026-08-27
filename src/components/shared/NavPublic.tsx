@@ -21,6 +21,11 @@ export default function NavPublic() {
     setMenuOpen(false);
   }, [pathname]);
 
+  // En la pantalla de login/acceso no mostramos la barra pública para mantener la vista limpia de app
+  if (pathname === "/login" || pathname === "/acceso") {
+    return null;
+  }
+
   // Bloquear scroll del body cuando el menú está abierto
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";

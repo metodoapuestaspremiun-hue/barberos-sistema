@@ -4,8 +4,8 @@ self.addEventListener("push", function (event) {
       const payload = event.data.json();
       const options = {
         body: payload.body || "Tienes un check-in pendiente de aprobación.",
-        icon: "/logos/barberos_isotipo.png",
-        badge: "/logos/barberos_isotipo.png",
+        icon: payload.icon || "/logos/negocios_icon_192.png",
+        badge: "/logos/negocios_icon_192.png",
         vibrate: [200, 100, 200],
         data: {
           url: payload.url || "/panel",
@@ -13,21 +13,21 @@ self.addEventListener("push", function (event) {
       };
 
       event.waitUntil(
-        self.registration.showNotification(payload.title || "✂️ BarberOS Check-In", options)
+        self.registration.showNotification(payload.title || "🔔 NegociOS Check-In", options)
       );
     } catch (e) {
       // Fallback si no es JSON válido
       const options = {
         body: event.data.text(),
-        icon: "/logos/barberos_isotipo.png",
-        badge: "/logos/barberos_isotipo.png",
+        icon: "/logos/negocios_icon_192.png",
+        badge: "/logos/negocios_icon_192.png",
         vibrate: [200, 100, 200],
         data: {
           url: "/panel",
         },
       };
       event.waitUntil(
-        self.registration.showNotification("✂️ BarberOS Check-In", options)
+        self.registration.showNotification("🔔 NegociOS Check-In", options)
       );
     }
   }

@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const footerLinks = [
   { href: "/", label: "Inicio" },
@@ -10,6 +13,12 @@ const footerLinks = [
 ];
 
 export default function FooterPublic() {
+  const pathname = usePathname();
+
+  if (pathname === "/login" || pathname === "/acceso") {
+    return null;
+  }
+
   return (
     <footer
       className="border-t border-[#2a2520] bg-[#0a0807] py-16 px-6"

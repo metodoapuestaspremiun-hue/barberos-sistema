@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
       try {
         const welcomePayload = JSON.stringify({
           title: "🔔 Alertas Activadas",
-          body: "¡Listo, bro! Ahora recibirás una notificación al instante cuando un cliente pida registrar un corte.",
+          body: "¡Listo! Recibirás una notificación al instante cuando un cliente pida registrar su visita o check-in.",
           url: "/panel",
         });
 

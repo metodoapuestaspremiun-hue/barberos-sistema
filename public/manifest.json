@@ -1,21 +1,22 @@
 {
-  "short_name": "BarberOS",
-  "name": "BarberOS Panel de Barbería",
+  "short_name": "NegociOS",
+  "name": "NegociOS Panel",
+  "description": "Plataforma de Fidelización y Gestión de Clientes",
   "icons": [
     {
-      "src": "/logos/barberos_isotipo.png",
+      "src": "/logos/negocios_icon_192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/logos/barberos_isotipo.png",
+      "src": "/logos/negocios_icon_512.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "512x512"
     }
   ],
   "start_url": "/panel",
-  "background_color": "#0a0807",
-  "theme_color": "#d97644",
+  "background_color": "#09090b",
+  "theme_color": "#09090b",
   "display": "standalone",
   "orientation": "portrait"
 }
