@@ -19,7 +19,8 @@ export default function StaffManager({ vertical }: { vertical?: string | null })
   const fileInputRef = useRef<HTMLInputElement>(null);
   const terms = getTenantTerms(vertical);
   const isGabinete = (vertical || "").toUpperCase() === "GABINETE" || (vertical || "").toUpperCase() === "SALON";
-  const icon = isGabinete ? "💅" : "💈";
+  const isNegocio = (vertical || "").toUpperCase() === "NEGOCIO";
+  const icon = isGabinete ? "💅" : isNegocio ? "🏪" : "💈";
 
   const fetchStaff = async () => {
     try {

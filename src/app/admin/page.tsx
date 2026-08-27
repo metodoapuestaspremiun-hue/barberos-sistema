@@ -28,7 +28,7 @@ export default function AdminDashboard() {
   const [adminSecret, setAdminSecret] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [barbershops, setBarbershops] = useState<Barbershop[]>([]);
-  const [filterVertical, setFilterVertical] = useState<"ALL" | "BARBERIA" | "GABINETE">("BARBERIA");
+  const [filterVertical, setFilterVertical] = useState<"ALL" | "BARBERIA" | "GABINETE" | "NEGOCIO">("ALL");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -40,7 +40,7 @@ export default function AdminDashboard() {
   const [ownerPhone, setOwnerPhone] = useState("");
   const [salesAgent, setSalesAgent] = useState("");
   const [planType, setPlanType] = useState<"PRO" | "PREMIUM">("PRO");
-  const [vertical, setVertical] = useState<"BARBERIA" | "GABINETE">("BARBERIA");
+  const [vertical, setVertical] = useState<"BARBERIA" | "GABINETE" | "NEGOCIO">("BARBERIA");
 
   // Estado para la barbería en edición
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -49,7 +49,7 @@ export default function AdminDashboard() {
   const [editRequiredCuts, setEditRequiredCuts] = useState(5);
   const [editGoogleMapsUrl, setEditGoogleMapsUrl] = useState("");
   const [editSalesAgent, setEditSalesAgent] = useState("");
-  const [editVertical, setEditVertical] = useState<"BARBERIA" | "GABINETE">("BARBERIA");
+  const [editVertical, setEditVertical] = useState<"BARBERIA" | "GABINETE" | "NEGOCIO">("BARBERIA");
 
   // Estado para tab de vendedores
   const [activeTab, setActiveTab] = useState<"barbershops" | "vendedores">("barbershops");
@@ -291,7 +291,13 @@ export default function AdminDashboard() {
     setEditRequiredCuts(shop.requiredCuts);
     setEditGoogleMapsUrl(shop.googleMapsUrl || "");
     setEditSalesAgent(shop.salesAgent || "");
-    setEditVertical((shop.vertical === "GABINETE" || shop.vertical === "SALON") ? "GABINETE" : "BARBERIA");
+    setEditVertical(
+      shop.vertical === "GABINETE" || shop.vertical === "SALON"
+        ? "GABINETE"
+        : shop.vertical === "NEGOCIO"
+        ? "NEGOCIO"
+        : "BARBERIA"
+    );
   };
 
   const handleSaveEdit = async (barbershopId: string) => {
@@ -364,19 +370,26 @@ export default function AdminDashboard() {
   }
 
   const barberiasCount = barbershops.filter(
-    (s) => s.vertical !== "GABINETE" && s.vertical !== "SALON"
+    (s) => s.vertical !== "GABINETE" && s.vertical !== "SALON" && s.vertical !== "NEGOCIO"
   ).length;
 
   const gabinetesCount = barbershops.filter(
     (s) => s.vertical === "GABINETE" || s.vertical === "SALON"
   ).length;
 
+  const negociosCount = barbershops.filter(
+    (s) => s.vertical === "NEGOCIO"
+  ).length;
+
   const filteredBarbershops = barbershops.filter((shop) => {
     if (filterVertical === "BARBERIA") {
-      return shop.vertical !== "GABINETE" && shop.vertical !== "SALON";
+      return shop.vertical !== "GABINETE" && shop.vertical !== "SALON" && shop.vertical !== "NEGOCIO";
     }
     if (filterVertical === "GABINETE") {
       return shop.vertical === "GABINETE" || shop.vertical === "SALON";
+    }
+    if (filterVertical === "NEGOCIO") {
+      return shop.vertical === "NEGOCIO";
     }
     return true;
   });
@@ -402,7 +415,7 @@ export default function AdminDashboard() {
                     : "text-[#5c554c] hover:text-[#f3ece1]"
                 }`}
               >
-                Barberías
+                Negocios
               </button>
               <button
                 onClick={() => setActiveTab("vendedores")}
@@ -435,32 +448,32 @@ export default function AdminDashboard() {
           {/* Formulario de Onboarding */}
           <div className="lg:col-span-1 bg-[#131110] border border-[#2a2520] p-8 space-y-6">
             <h3 className="font-display text-2xl font-light text-[#d97644]">
-              Nueva Barbería (Onboarding)
+              Nuevo Negocio (Onboarding)
             </h3>
 
             {createdPin && (
               <div className="p-4 bg-green-950/40 border border-green-800 text-green-400 font-mono text-xs rounded space-y-2 animate-pulse-short">
-                <p className="font-bold text-[10px] tracking-wider uppercase">✨ ¡BARBERÍA CREADA CON ÉXITO!</p>
+                <p className="font-bold text-[10px] tracking-wider uppercase">✨ ¡NEGOCIO CREADO CON ÉXITO!</p>
                 <p>Nombre: <span className="text-white">{createdShopName}</span></p>
                 <div className="p-3 bg-[#0a0807] border border-green-900 text-center rounded">
                   <p className="text-[10px] uppercase text-[#5c554c] tracking-wider mb-1">CÓDIGO PIN DE ACCESO</p>
                   <p className="text-2xl font-bold text-white tracking-[0.2em]">{createdPin}</p>
                 </div>
-                <p className="text-[9px] text-[#5c554c] text-center">Pásale este código al barbero para que ingrese desde /login.</p>
+                <p className="text-[9px] text-[#5c554c] text-center">Pásale este código al dueño/administrador para que ingrese desde /login.</p>
               </div>
             )}
 
             <form onSubmit={handleCreate} className="space-y-4">
               <div>
                 <label className="block font-mono text-[10px] tracking-wider uppercase text-[#5c554c] mb-1">
-                  Nombre de la Barbería
+                  Nombre del Negocio
                 </label>
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Ej. Barbería El Elegante"
+                  placeholder="Ej. Barbería Elite / Salón Glamour"
                   className="w-full px-3 py-2 font-mono text-xs bg-[#0a0807] border border-[#2a2520] text-[#f3ece1] focus:outline-none focus:border-[#d97644]"
                 />
               </div>
@@ -539,10 +552,12 @@ export default function AdminDashboard() {
                 </label>
                 <select
                   value={vertical}
-                  onChange={(e) => setVertical(e.target.value as "BARBERIA")}
+                  onChange={(e) => setVertical(e.target.value as "BARBERIA" | "GABINETE" | "NEGOCIO")}
                   className="w-full px-3 py-2 font-mono text-xs bg-[#0a0807] border border-[#2a2520] text-[#f3ece1] focus:outline-none focus:border-[#d97644]"
                 >
-                  <option value="BARBERIA">💈 Barbería Exclusivo</option>
+                  <option value="BARBERIA">💈 Barbería (BarberOS)</option>
+                  <option value="GABINETE">💅 Gabinete / Salón (GabineteOS)</option>
+                  <option value="NEGOCIO">🏪 Negocio / Comercio (NegocioOS)</option>
                 </select>
               </div>
 
@@ -563,7 +578,7 @@ export default function AdminDashboard() {
                 type="submit"
                 className="w-full py-3 font-mono text-xs tracking-[0.2em] uppercase text-[#0a0807] bg-[#d97644] hover:bg-[#e8854f] transition-colors pt-2"
               >
-                Crear Barbería
+                Crear Negocio
               </button>
             </form>
           </div>
@@ -576,7 +591,9 @@ export default function AdminDashboard() {
                   ? `Todos los Negocios (${filteredBarbershops.length})`
                   : filterVertical === "BARBERIA"
                   ? `Barberías (${filteredBarbershops.length})`
-                  : `Gabinetes (${filteredBarbershops.length})`}
+                  : filterVertical === "GABINETE"
+                  ? `Gabinetes (${filteredBarbershops.length})`
+                  : `Negocios (${filteredBarbershops.length})`}
               </h3>
 
               {/* Filtro por tipo de negocio (Vertical) */}
@@ -614,6 +631,17 @@ export default function AdminDashboard() {
                 >
                   💅 Gabinetes ({gabinetesCount})
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setFilterVertical("NEGOCIO")}
+                  className={`px-3 py-1.5 font-mono text-xs rounded flex items-center gap-1 transition-all ${
+                    filterVertical === "NEGOCIO"
+                      ? "bg-sky-500/20 text-sky-300 border border-sky-500/50 font-bold"
+                      : "text-[#a89e90] hover:text-[#f3ece1] hover:bg-[#1a1714]"
+                  }`}
+                >
+                  🏪 Negocios ({negociosCount})
+                </button>
               </div>
             </div>
 
@@ -621,7 +649,7 @@ export default function AdminDashboard() {
               <p className="font-mono text-xs text-[#5c554c]">No hay negocios registrados aún.</p>
             ) : filteredBarbershops.length === 0 ? (
               <p className="font-mono text-xs text-[#5c554c] py-4 text-center">
-                No hay negocios de tipo {filterVertical === "BARBERIA" ? "Barbería" : "Gabinete"}.
+                No hay registros de tipo {filterVertical === "BARBERIA" ? "Barbería" : filterVertical === "GABINETE" ? "Gabinete" : "Negocio"}.
               </p>
             ) : (
               <div className="overflow-x-auto">
@@ -686,11 +714,12 @@ export default function AdminDashboard() {
                                   <label className="block font-mono text-[9px] uppercase text-[#5c554c] mb-1">Tipo de Negocio</label>
                                   <select
                                     value={editVertical}
-                                    onChange={(e) => setEditVertical(e.target.value as "BARBERIA" | "GABINETE")}
+                                    onChange={(e) => setEditVertical(e.target.value as "BARBERIA" | "GABINETE" | "NEGOCIO")}
                                     className="w-full px-2 py-1 font-mono text-xs bg-[#131110] border border-[#2a2520] text-[#f3ece1] focus:outline-none focus:border-[#d97644]"
                                   >
                                     <option value="BARBERIA">💈 Barbería</option>
                                     <option value="GABINETE">💅 Gabinete / Salón</option>
+                                    <option value="NEGOCIO">🏪 Negocio / Comercio</option>
                                   </select>
                                 </div>
                                 <div className="sm:col-span-2">
@@ -729,9 +758,15 @@ export default function AdminDashboard() {
                                 <span className={`px-1.5 py-0.5 text-[9px] font-mono rounded ${
                                   shop.vertical === "GABINETE" || shop.vertical === "SALON"
                                     ? "bg-pink-950/40 text-pink-300 border border-pink-800"
+                                    : shop.vertical === "NEGOCIO"
+                                    ? "bg-sky-950/40 text-sky-300 border border-sky-800"
                                     : "bg-amber-950/40 text-amber-300 border border-amber-800"
                                 }`}>
-                                  {shop.vertical === "GABINETE" || shop.vertical === "SALON" ? "💅 Gabinete" : "💈 Barbería"}
+                                  {shop.vertical === "GABINETE" || shop.vertical === "SALON"
+                                    ? "💅 Gabinete"
+                                    : shop.vertical === "NEGOCIO"
+                                    ? "🏪 Negocio"
+                                    : "💈 Barbería"}
                                 </span>
                               </div>
                               {shop.googleMapsUrl ? (

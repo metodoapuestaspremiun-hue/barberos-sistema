@@ -9,7 +9,7 @@ const settingsSchema = z.object({
   visitDurationMin: z.number().min(5).max(480).nullable().optional(),
   businessInfo: z.string().max(2000).nullable().optional(),
   requiredCuts: z.number().min(2).max(50).optional(),
-  vertical: z.enum(["BARBERIA", "GABINETE", "SALON"]).optional(),
+  vertical: z.enum(["BARBERIA", "GABINETE", "SALON", "NEGOCIO"]).optional(),
 });
 
 export async function PATCH(request: NextRequest) {

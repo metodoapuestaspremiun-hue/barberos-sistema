@@ -166,7 +166,8 @@ export default function BarberosView({
   const [visibleReviewsCount, setVisibleReviewsCount] = useState<number>(10);
   const terms = getTenantTerms(vertical);
   const isGabinete = (vertical || "").toUpperCase() === "GABINETE" || (vertical || "").toUpperCase() === "SALON";
-  const icon = isGabinete ? "💅" : "💈";
+  const isNegocio = (vertical || "").toUpperCase() === "NEGOCIO";
+  const icon = isGabinete ? "💅" : isNegocio ? "🏪" : "💈";
 
   const selectedStaff = selectedView !== "general"
     ? staffStats.find((s) => s.id === selectedView)
@@ -201,22 +202,21 @@ export default function BarberosView({
     <div className="space-y-6">
       {/* QR General */}
       {selectedView === "general" && whatsappNumber && (
-        <div className="bg-[#131110] border border-[#2a2520] p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="space-y-2 text-center sm:text-left">
-            <span style={{ color: terms.accentColor }} className="font-mono text-[10px] tracking-[0.3em] uppercase">
+        <div className="bg-[#131110] border border-[#2a2520] p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-5">
+          <div className="space-y-1 text-center sm:text-left">
+            <span style={{ color: terms.accentColor }} className="font-mono text-[10px] tracking-[0.25em] uppercase">
               QR PRINCIPAL DE CAJA
             </span>
             <h3 className="font-display text-2xl font-light text-[#f3ece1]">
               QR General para Clientes
             </h3>
-            <p className="font-mono text-xs text-[#5c554c] max-w-md">
-              Escanea para registrar {terms.rewardUnitSingular} con el código de caja en vivo:{" "}
-              <strong style={{ color: terms.accentColor }} className="font-normal">{currentBoxCode}</strong>
+            <p className="font-mono text-xs text-[#5c554c]">
+              Código activo: <strong style={{ color: terms.accentColor }} className="font-bold">{currentBoxCode}</strong>
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center gap-4 shrink-0">
-            <div className="bg-[#f3ece1] p-2 w-28 h-28 sm:w-32 sm:h-32">
+            <div className="bg-[#f3ece1] p-2 w-24 h-24 sm:w-28 sm:h-28">
               <div
                 className="w-full h-full"
                 style={{
@@ -261,17 +261,11 @@ export default function BarberosView({
 
       {/* 🏆 RANKING DEL MES (Solo en vista General) */}
       {selectedView === "general" && rankedStaff.length > 0 && (
-        <div className="bg-[#131110] border border-[#2a2520] p-6 space-y-4">
+        <div className="bg-[#131110] border border-[#2a2520] p-5 sm:p-6 space-y-4">
           <div className="flex items-center justify-between border-b border-[#2a2520] pb-3">
-            <div>
-              <span className="font-mono text-[10px] tracking-[0.25em] uppercase text-[#d97644]">
-                COMPETENCIA SANA
-              </span>
-              <h3 className="font-display text-xl font-light text-[#f3ece1]">
-                🏆 Ranking del Mes
-              </h3>
-            </div>
-            <span className="font-mono text-[10px] text-[#5c554c] uppercase">Por Calificación</span>
+            <h3 className="font-display text-xl font-light text-[#f3ece1] flex items-center gap-2">
+              <span>🏆</span> Ranking del Mes
+            </h3>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -301,7 +295,7 @@ export default function BarberosView({
                     {staff.name}
                   </p>
                   <p className="font-mono text-[10px] text-[#5c554c]">
-                    {staff.totalRatings} reseñas recibidas
+                    {staff.totalRatings} reseñas
                   </p>
                 </div>
               );
@@ -310,24 +304,19 @@ export default function BarberosView({
         </div>
       )}
 
-
       {/* Banner Principal del Barbero */}
       {selectedStaff && whatsappNumber && (
         <div className="bg-[#131110] border border-[#2a2520] relative overflow-hidden flex flex-col md:flex-row items-stretch">
-          {/* Lado Izquierdo + Centro: QR y Texto */}
-          <div className="p-5 sm:p-8 flex-1 flex flex-col justify-between space-y-4 md:space-y-6 z-10">
-            {/* Header Móvil: QR a la izquierda + Foto al lado a la derecha (en Celular) */}
+          {/* Lado Izquierdo + Centro: QR y Título */}
+          <div className="p-5 sm:p-7 flex-1 flex flex-col justify-between space-y-4 z-10">
             <div className="flex flex-row items-start justify-between md:justify-start gap-4 sm:gap-6">
               {/* QR + Botón Descargar */}
               <div className="flex flex-col items-center gap-2 shrink-0">
-                <p className="font-mono text-[9px] sm:text-[10px] tracking-[0.25em] uppercase text-[#5c554c]">
-                  QR DE {selectedStaff.name.toUpperCase()}
-                </p>
                 {(() => {
                   const qrUrl = buildStaffQrUrl(whatsappNumber, currentBoxCode, selectedStaff.name);
                   return (
                     <>
-                      <div className="bg-[#f3ece1] p-2 sm:p-3 w-28 h-28 sm:w-36 sm:h-36">
+                      <div className="bg-[#f3ece1] p-2 w-28 h-28 sm:w-32 sm:h-32">
                         <div
                           className="w-full h-full"
                           style={{
@@ -342,8 +331,8 @@ export default function BarberosView({
                 })()}
               </div>
 
-              {/* Foto del Barbero AL LADO del QR (Visible únicamente en celulares/pantallas móviles) */}
-              <div className="md:hidden w-28 h-36 sm:w-32 sm:h-44 shrink-0 border border-[#2a2520] bg-[#0a0807] overflow-hidden relative shadow-md">
+              {/* Foto del Barbero AL LADO del QR (Móvil) */}
+              <div className="md:hidden w-28 h-36 sm:w-32 sm:h-40 shrink-0 border border-[#2a2520] bg-[#0a0807] overflow-hidden relative shadow-md">
                 {selectedStaff.photoUrl ? (
                   <img
                     src={selectedStaff.photoUrl}
@@ -352,29 +341,29 @@ export default function BarberosView({
                   />
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center text-center p-2">
-                    <span className="text-3xl opacity-40 mb-1">💈</span>
+                    <span className="text-3xl opacity-40 mb-1">{icon}</span>
                     <span className="font-mono text-[9px] text-[#5c554c]">Sin Foto</span>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Explicación y Código de caja */}
-            <div className="space-y-2 pt-2 md:pt-0">
+            {/* Identificación y Código activo */}
+            <div className="space-y-1">
+              <span style={{ color: terms.accentColor }} className="font-mono text-[10px] tracking-[0.25em] uppercase">
+                QR PERSONAL
+              </span>
               <h3 className="font-display text-2xl sm:text-3xl font-light text-[#f3ece1]">
-                Código QR exclusivo de {selectedStaff.name}
+                {selectedStaff.name}
               </h3>
-              <p className="font-mono text-xs text-[#5c554c] leading-relaxed max-w-xl">
-                El cliente escanea este QR y el sistema <strong style={{ color: terms.accentColor }} className="font-normal">automáticamente sabe</strong> que fue atendido por <span className="text-[#a89e90]">{selectedStaff.name}</span>, sin necesidad de preguntarle por WhatsApp.
-              </p>
               <p className="font-mono text-xs text-[#5c554c]">
-                Código de caja activo: <span style={{ color: terms.accentColor }} className="font-bold">{currentBoxCode}</span> — se actualiza con cada check-in
+                Código de caja activo: <span style={{ color: terms.accentColor }} className="font-bold">{currentBoxCode}</span>
               </p>
             </div>
           </div>
 
-          {/* Lado Derecho: Foto Rectangular de Cuerpo/Retrato (Visible en Escritorio md+) */}
-          <div className="hidden md:flex w-80 lg:w-96 shrink-0 relative min-h-full overflow-hidden items-center justify-center bg-[#0a0807]">
+          {/* Lado Derecho: Foto (Escritorio) */}
+          <div className="hidden md:flex w-72 lg:w-80 shrink-0 relative min-h-full overflow-hidden items-center justify-center bg-[#0a0807]">
             {selectedStaff.photoUrl ? (
               <>
                 <img
@@ -382,19 +371,12 @@ export default function BarberosView({
                   alt={selectedStaff.name}
                   className="w-full h-full object-cover object-center"
                 />
-                {/* Overlay con degradado suave */}
                 <div className="absolute inset-0 bg-gradient-to-r from-[#131110] via-transparent to-transparent opacity-80" />
               </>
             ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center bg-[#0a0807] border-l border-[#2a2520]">
-                <span className="text-5xl opacity-40 mb-2">💈</span>
+              <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-[#0a0807] border-l border-[#2a2520]">
+                <span className="text-4xl opacity-40 mb-2">{icon}</span>
                 <p className="font-mono text-xs text-[#5c554c]">Sin foto configurada</p>
-                <a
-                  href="/panel/whatsapp"
-                  className="font-mono text-[10px] text-[#d97644] uppercase tracking-wider mt-2 hover:underline"
-                >
-                  Configurar Foto ↗
-                </a>
               </div>
             )}
           </div>
@@ -542,9 +524,9 @@ export default function BarberosView({
 
       {/* Nota de calificaciones sin asignar */}
       {unassignedCount > 0 && selectedView === "general" && (
-        <div className="bg-[#131110] border border-[#2a2520] p-4">
+        <div className="p-3 bg-[#131110]/70 border border-[#2a2520] text-center sm:text-left">
           <p className="font-mono text-[10px] text-[#5c554c]">
-            ℹ️ Hay {unassignedCount} calificaciones sin profesional asignado (registradas antes de activar la selección de equipo). Estas se incluyen en el promedio general.
+            ℹ️ {unassignedCount} calificaciones sin asignar incluidas en el promedio general.
           </p>
         </div>
       )}

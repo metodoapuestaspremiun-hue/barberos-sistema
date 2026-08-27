@@ -129,16 +129,16 @@ export default async function DashboardPage() {
 
   let healthStatus = "Excelente";
   let healthDot = "bg-emerald-400";
-  let healthMessage = `Tu ${terms.businessTypeName.toLowerCase()} está muy saludable. Esta semana registraste un alto retorno de clientes.`;
+  let healthMessage = "Retorno constante y clientes al día.";
 
   if (healthScore < 60) {
     healthStatus = "En Atención";
     healthDot = "bg-red-400";
-    healthMessage = `Atención requerida: tienes ${overdueCustomers.length} clientes que han superado su frecuencia habitual de ${terms.rewardUnitSingular} (límite 1.2x).`;
+    healthMessage = `${overdueCustomers.length} clientes fuera de su ciclo habitual.`;
   } else if (healthScore < 80) {
     healthStatus = "Estable";
     healthDot = "bg-amber-400";
-    healthMessage = `Tu ${terms.businessTypeName.toLowerCase()} está estable. Te recomendamos recordarles su ${terms.rewardUnitSingular} a los clientes en límite 0.8x.`;
+    healthMessage = "Frecuencia estable con clientes por retornar.";
   }
 
   // VIPs

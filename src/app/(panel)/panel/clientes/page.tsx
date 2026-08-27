@@ -193,11 +193,11 @@ export default async function ClientesPage({
           </span>
         }
         title="Clientes"
-        subtitle="Cada perfil cuenta una historia: desde el Consumidor Final hasta tus clientes VIP. Gestiona, filtra y entiéndelos."
+        subtitle="Base de clientes, fidelización e historial de visitas."
         action={
           isPremium && <ExportDataButton variant="compact" />
         }
-        minHeight={300}
+        minHeight={260}
       />
 
       {/* MÉTRICAS RÁPIDAS */}

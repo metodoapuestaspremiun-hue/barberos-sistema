@@ -124,6 +124,7 @@ export default function ConfigForm({ initialData, isPremium }: SettingsProps) {
           >
             <option value="BARBERIA">💈 Barbería (Estilo masculino, cortes y barba)</option>
             <option value="GABINETE">💅 Gabinete de Belleza / Salón (Estética femenina, servicios y cuidado)</option>
+            <option value="NEGOCIO">🏪 Negocio / Comercio General (Fidelización por visitas y equipo)</option>
           </select>
         </div>
       </div>

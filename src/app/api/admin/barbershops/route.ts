@@ -23,7 +23,7 @@ const CreateBarbershopSchema = z.object({
   salesAgent: z.string().optional(),
   ownerPhone: z.string().optional(),
   planType: z.enum(["PRO", "PREMIUM"]).default("PRO"),
-  vertical: z.enum(["BARBERIA", "GABINETE", "SALON"]).default("BARBERIA"),
+  vertical: z.enum(["BARBERIA", "GABINETE", "SALON", "NEGOCIO"]).default("BARBERIA"),
 });
 
 // GET /api/admin/barbershops - Listar todas las barberías
@@ -34,11 +34,6 @@ export async function GET(request: NextRequest) {
 
   try {
     const barbershops = await prisma.barbershop.findMany({
-      where: {
-        NOT: {
-          vertical: { in: ["GABINETE", "SALON", "GIMNASIO", "GYM"] },
-        },
-      },
       orderBy: { createdAt: "desc" },
     });
     return NextResponse.json(barbershops);
@@ -198,7 +193,7 @@ const UpdateBarbershopSchema = z.object({
   googleMapsUrl: z.string().nullable().optional(),
   ownerPhone: z.string().nullable().optional(),
   salesAgent: z.string().nullable().optional(),
-  vertical: z.enum(["BARBERIA", "GABINETE", "SALON"]).optional(),
+  vertical: z.enum(["BARBERIA", "GABINETE", "SALON", "NEGOCIO"]).optional(),
 });
 
 // PATCH /api/admin/barbershops - Cambiar planStatus/planType manualmente o editar datos de la barbería

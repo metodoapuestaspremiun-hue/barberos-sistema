@@ -108,8 +108,8 @@ export default async function BarberosPage() {
           </span>
         }
         title={terms.staffTitle}
-        subtitle={`Mide el desempeño de cada ${terms.staffSingular.toLowerCase()}: calificaciones, distribución de estrellas y reseñas reales de tus clientes.`}
-        minHeight={300}
+        subtitle={`Calificaciones y desempeño de tu equipo en tiempo real.`}
+        minHeight={260}
       />
 
       {/* MÉTRICAS RÁPIDAS */}

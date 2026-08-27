@@ -1,4 +1,4 @@
-export type BusinessVertical = "BARBERIA" | "GABINETE" | "SALON";
+export type BusinessVertical = "BARBERIA" | "GABINETE" | "SALON" | "NEGOCIO";
 
 export interface TenantTerms {
   brandName: string;
@@ -34,6 +34,24 @@ export function getTenantTerms(vertical?: string | null): TenantTerms {
       accentColorClass: "text-[#FE889F]",
       accentBorderClass: "border-[#FE889F]",
       accentBgClass: "bg-[#FE889F]",
+    };
+  }
+
+  if (v === "NEGOCIO") {
+    return {
+      brandName: "NegocioOS",
+      businessTypeName: "Negocio / Comercio",
+      businessTypePlural: "Negocios",
+      staffTitle: "Colaboradores",
+      staffSingular: "Colaborador",
+      rewardUnitSingular: "visita",
+      rewardUnitPlural: "visitas",
+      actionButtonText: "REGISTRAR VISITA",
+      heroImage: "https://images.unsplash.com/photo-1556742049-0a67c57750c9?w=1600&q=80",
+      accentColor: "#38bdf8",
+      accentColorClass: "text-[#38bdf8]",
+      accentBorderClass: "border-[#38bdf8]",
+      accentBgClass: "bg-[#38bdf8]",
     };
   }
 

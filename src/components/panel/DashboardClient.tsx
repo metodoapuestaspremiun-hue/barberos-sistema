@@ -228,17 +228,6 @@ export default function DashboardClient({
               accent={ratingsThisMonth > 0 ? "green" : "neutral"}
             />
           </div>
-
-          <GlassCard padding="lg">
-            <h3 className="font-display text-2xl font-light text-[#f3ece1] mb-2">
-              Tu reputación, en tiempo real
-            </h3>
-            <p className="text-sm text-[#a89e90] leading-relaxed">
-              Cada visita aprobada pide una reseña al cliente. Si sale contento, se publica a
-              Google en el momento. Si no, te avisamos antes de que pase algo. Tu score se
-              construye automáticamente sin que tengas que hacer nada.
-            </p>
-          </GlassCard>
         </div>
       )}
 
@@ -359,17 +348,6 @@ export default function DashboardClient({
               href="/panel/clientes?tab=recurrentes"
             />
           </div>
-
-          <GlassCard padding="lg">
-            <h3 className="font-display text-xl font-light text-[#f3ece1] mb-2">
-              Fidelización que se mide sola
-            </h3>
-            <p className="text-sm text-[#a89e90] leading-relaxed">
-              Cada cliente tiene su propio patrón de corte. BarberOS aprende cuándo es el
-              momento justo para recordarles y nunca pierde una oportunidad de traerlos de
-              vuelta. La retención se construye con avisos precisos, no spam.
-            </p>
-          </GlassCard>
         </div>
       )}
 

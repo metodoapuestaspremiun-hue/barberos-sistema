@@ -30,8 +30,7 @@ export default function CustomerRegistrationQRCard({
   )}`;
 
   const terms = getTenantTerms(vertical);
-  const isGabinete = (vertical || "").toUpperCase() === "GABINETE" || (vertical || "").toUpperCase() === "SALON";
-  const accentColor = isGabinete ? "#FE889F" : "#d97644";
+  const accentColor = terms.accentColor;
 
   const handleCopyLink = async () => {
     try {
@@ -72,20 +71,11 @@ export default function CustomerRegistrationQRCard({
         {/* Información y Acciones */}
         <div className="flex-1 space-y-4 text-left">
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span
-                className="inline-block w-2 h-2 rounded-full animate-pulse"
-                style={{ backgroundColor: accentColor }}
-              />
-              <span className="text-xs font-mono tracking-widest uppercase text-[#a89e90]">
-                Formulario de Captación Directa
-              </span>
-            </div>
             <h3 className="text-xl font-display font-medium text-[#f3ece1]">
-              Código QR de Clientes para <span style={{ color: accentColor }}>{barbershopName}</span>
+              QR de Captación de Clientes
             </h3>
-            <p className="text-xs font-sans text-[#a89e90] mt-1 leading-relaxed">
-              Muestra o imprime este QR en tu recepción o espejos. Tus clientes escanean el código desde su móvil, llenan sus datos y se guardan automáticamente en tu base de datos de <strong className="text-[#f3ece1]">{terms.businessTypePlural}</strong>.
+            <p className="text-xs font-sans text-[#a89e90] mt-1">
+              Muestra este QR en recepción para que nuevos clientes registren sus datos al instante.
             </p>
           </div>
 
