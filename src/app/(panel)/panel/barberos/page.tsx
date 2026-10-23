@@ -4,6 +4,7 @@ import PanelHero from "@/components/redesign/PanelHero";
 import MetricTile from "@/components/redesign/MetricTile";
 import BarberosView from "@/components/panel/BarberosView";
 import { getTenantTerms } from "@/lib/tenant-dictionary";
+import { getEvolutionInstanceDetails } from "@/lib/evolution";
 
 export default async function BarberosPage() {
   const session = await verifySession();
@@ -11,8 +12,26 @@ export default async function BarberosPage() {
 
   const barbershop = await prisma.barbershop.findUnique({
     where: { id: barbershopId },
-    select: { whatsappNumber: true, whatsappConnected: true, currentBoxCode: true, name: true, vertical: true },
+    select: { id: true, evolutionInstance: true, whatsappNumber: true, whatsappConnected: true, currentBoxCode: true, name: true, vertical: true },
   });
+
+  // Sincronización dinámica: Si hay instancia en Evolution, verificar el número actualmente conectado (ownerJid)
+  let activeConnectedWhatsapp = barbershop?.whatsappConnected || "";
+  if (barbershop?.evolutionInstance) {
+    try {
+      const details = await getEvolutionInstanceDetails(barbershop.evolutionInstance);
+      if (details.ownerPhone && details.ownerPhone !== barbershop.whatsappConnected) {
+        activeConnectedWhatsapp = details.ownerPhone;
+        // Sincronizar en DB de forma asíncrona en background
+        prisma.barbershop.update({
+          where: { id: barbershop.id },
+          data: { whatsappConnected: details.ownerPhone },
+        }).catch(console.error);
+      }
+    } catch {
+      // Usar el que ya tiene en DB si falla la llamada
+    }
+  }
 
   const terms = getTenantTerms(barbershop?.vertical);
 
@@ -147,9 +166,9 @@ export default async function BarberosPage() {
         unassignedCount={unassignedCount}
         whatsappNumber={barbershop?.whatsappNumber || ""}
         currentBoxCode={barbershop?.currentBoxCode || ""}
-        // whatsappConnected = número real conectado en Evolution (puede diferir del registrado)
-        // El QR debe apuntar al número que escucha mensajes, no al registrado en la cuenta
-        whatsappConnected={barbershop?.whatsappConnected || ""}
+        // whatsappConnected = número real actualmente conectado en Evolution (dinámico según quien escaneó)
+        // El QR debe apuntar al número que escucha mensajes, sin importar con qué número se creó la cuenta
+        whatsappConnected={activeConnectedWhatsapp}
         vertical={barbershop?.vertical}
       />
     </div>

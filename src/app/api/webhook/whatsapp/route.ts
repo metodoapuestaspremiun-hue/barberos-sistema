@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { sendWhatsAppMessage } from "@/lib/evolution";
+import { sendWhatsAppMessage, getEvolutionInstanceDetails } from "@/lib/evolution";
 import { generateBoxCode } from "@/lib/boxcode";
 import webpush from "web-push";
 import { getEcuadorHour } from "@/lib/time-ec";
@@ -463,7 +463,6 @@ export async function POST(request: NextRequest) {
     if (normalizedEvent === "connectionupdate") {
       const evolutionInstance = payload.instance;
       const connectionState = payload.data?.state;
-      const whatsappConnectedNumber = payload.data?.statusReason || payload.data?.phone || null;
 
       if (evolutionInstance) {
         let connectionStatus = "DISCONNECTED";
@@ -471,6 +470,19 @@ export async function POST(request: NextRequest) {
           connectionStatus = "CONNECTED";
         } else if (connectionState === "connecting" || connectionState === "qrcode") {
           connectionStatus = "WAITING_QR";
+        }
+
+        let whatsappConnectedNumber = payload.data?.statusReason || payload.data?.phone || null;
+        if (!whatsappConnectedNumber && (connectionState === "open" || connectionState === "connected")) {
+          // Consultar Evolution API para obtener el ownerJid real si no viene en el payload directo
+          try {
+            const details = await getEvolutionInstanceDetails(evolutionInstance);
+            if (details.ownerPhone) {
+              whatsappConnectedNumber = details.ownerPhone;
+            }
+          } catch (e) {
+            console.error("[Webhook WhatsApp] Error fetching instance details on connectionupdate:", e);
+          }
         }
 
         const barbershop = await prisma.barbershop.findFirst({ where: { evolutionInstance } });

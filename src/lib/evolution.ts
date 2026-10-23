@@ -163,21 +163,36 @@ export async function getFreshQR(instanceName: string): Promise<{ qrcode?: strin
 }
 
 /**
- * Obtiene el estado de conexión de la instancia
+ * Obtiene el estado de conexión y el número conectado (ownerJid) de la instancia
  */
-export async function getEvolutionStatus(instanceName: string): Promise<string> {
+export async function getEvolutionInstanceDetails(instanceName: string): Promise<{ state: string; ownerPhone: string | null }> {
   try {
-    const url = `${EVOLUTION_API_URL}/instance/connectionState/${instanceName}`;
+    const url = `${EVOLUTION_API_URL}/instance/fetchInstances?instanceName=${instanceName}`;
     const response = await axios.get(url, {
       headers: {
         apikey: EVOLUTION_API_KEY,
       },
+      timeout: 8000,
     });
-    return response.data?.instance?.state || "DISCONNECTED";
+    const inst = Array.isArray(response.data) ? response.data[0] : response.data;
+    if (inst) {
+      const state = inst.connectionStatus || "DISCONNECTED";
+      const ownerPhone = inst.ownerJid ? inst.ownerJid.replace(/@.*$/, "").replace(/\D/g, "") : null;
+      return { state, ownerPhone };
+    }
+    return { state: "DISCONNECTED", ownerPhone: null };
   } catch (error: any) {
-    console.error("[Evolution API] Error getting connection state:", error.response?.data || error.message);
-    return "DISCONNECTED";
+    console.error("[Evolution API] Error getting instance details:", error.response?.data || error.message);
+    return { state: "DISCONNECTED", ownerPhone: null };
   }
+}
+
+/**
+ * Obtiene el estado de conexión de la instancia (compatibilidad hacia atrás)
+ */
+export async function getEvolutionStatus(instanceName: string): Promise<string> {
+  const details = await getEvolutionInstanceDetails(instanceName);
+  return details.state;
 }
 
 /**
