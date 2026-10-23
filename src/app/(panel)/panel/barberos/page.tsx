@@ -11,7 +11,7 @@ export default async function BarberosPage() {
 
   const barbershop = await prisma.barbershop.findUnique({
     where: { id: barbershopId },
-    select: { whatsappNumber: true, currentBoxCode: true, name: true, vertical: true },
+    select: { whatsappNumber: true, whatsappConnected: true, currentBoxCode: true, name: true, vertical: true },
   });
 
   const terms = getTenantTerms(barbershop?.vertical);
@@ -147,6 +147,9 @@ export default async function BarberosPage() {
         unassignedCount={unassignedCount}
         whatsappNumber={barbershop?.whatsappNumber || ""}
         currentBoxCode={barbershop?.currentBoxCode || ""}
+        // whatsappConnected = número real conectado en Evolution (puede diferir del registrado)
+        // El QR debe apuntar al número que escucha mensajes, no al registrado en la cuenta
+        whatsappConnected={barbershop?.whatsappConnected || ""}
         vertical={barbershop?.vertical}
       />
     </div>

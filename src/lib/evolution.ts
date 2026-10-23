@@ -95,18 +95,19 @@ export async function createEvolutionInstance(instanceName: string): Promise<boo
 export async function configureEvolutionWebhook(instanceName: string, webhookUrl: string): Promise<boolean> {
   try {
     const url = `${EVOLUTION_API_URL}/webhook/set/${instanceName}`;
+    // Evolution API v2.x acepta payload FLAT (sin wrapper { webhook: {} })
+    // Los campos anidados se ignoran silenciosamente en esta versión.
     const response = await axios.post(
       url,
       {
-        webhook: {
-          enabled: true,
-          url: webhookUrl,
-          webhookByEvents: true,
-          events: [
-            "MESSAGES_UPSERT",
-            "CONNECTION_UPDATE"
-          ]
-        }
+        enabled: true,
+        url: webhookUrl,
+        webhookByEvents: true,
+        webhookBase64: false,
+        events: [
+          "MESSAGES_UPSERT",
+          "CONNECTION_UPDATE"
+        ],
       },
       {
         headers: {

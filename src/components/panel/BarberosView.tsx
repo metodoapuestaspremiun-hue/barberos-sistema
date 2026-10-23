@@ -32,6 +32,8 @@ interface BarberosViewProps {
   staffStats: StaffStat[];
   unassignedCount: number;
   whatsappNumber: string;
+  /** Número realmente conectado en la instancia Evolution (puede diferir del registrado) */
+  whatsappConnected?: string;
   currentBoxCode: string;
   vertical?: string | null;
 }
@@ -159,12 +161,19 @@ export default function BarberosView({
   staffStats,
   unassignedCount,
   whatsappNumber,
+  whatsappConnected,
   currentBoxCode,
   vertical,
 }: BarberosViewProps) {
   const [selectedView, setSelectedView] = useState<"general" | string>("general");
   const [visibleReviewsCount, setVisibleReviewsCount] = useState<number>(10);
   const terms = getTenantTerms(vertical);
+
+  // Número activo para QR: siempre el conectado en Evolution.
+  // Si whatsappConnected no está disponible aún (instancia sin conectar), usa el registrado.
+  const activeWhatsapp = (whatsappConnected && whatsappConnected.length > 5)
+    ? whatsappConnected
+    : whatsappNumber;
   const isGabinete = (vertical || "").toUpperCase() === "GABINETE" || (vertical || "").toUpperCase() === "SALON";
   const isNegocio = (vertical || "").toUpperCase() === "NEGOCIO";
   const icon = isGabinete ? "💅" : isNegocio ? "🏪" : "💈";
@@ -185,10 +194,10 @@ export default function BarberosView({
   const reviewsList = selectedStaff ? selectedStaff.reviews : [];
   const visibleReviews = reviewsList.slice(0, visibleReviewsCount);
 
-  // QR General de Caja
-  const generalQrUrl = whatsappNumber
+  // QR General de Caja — usa el número conectado en Evolution, no el de registro
+  const generalQrUrl = activeWhatsapp
     ? `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(
-        `https://wa.me/${whatsappNumber}?text=Hola,%20mi%20código%20de%20caja%20es%20${currentBoxCode}`
+        `https://wa.me/${activeWhatsapp}?text=Hola,%20mi%20código%20de%20caja%20es%20${currentBoxCode}`
       )}`
     : "";
 
@@ -201,7 +210,7 @@ export default function BarberosView({
   return (
     <div className="space-y-6">
       {/* QR General */}
-      {selectedView === "general" && whatsappNumber && (
+      {selectedView === "general" && activeWhatsapp && (
         <div className="bg-[#131110] border border-[#2a2520] p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-5">
           <div className="space-y-1 text-center sm:text-left">
             <span style={{ color: terms.accentColor }} className="font-mono text-[10px] tracking-[0.25em] uppercase">
@@ -305,7 +314,7 @@ export default function BarberosView({
       )}
 
       {/* Banner Principal del Barbero */}
-      {selectedStaff && whatsappNumber && (
+      {selectedStaff && activeWhatsapp && (
         <div className="bg-[#131110] border border-[#2a2520] relative overflow-hidden flex flex-col md:flex-row items-stretch">
           {/* Lado Izquierdo + Centro: QR y Título */}
           <div className="p-5 sm:p-7 flex-1 flex flex-col justify-between space-y-4 z-10">
@@ -313,7 +322,7 @@ export default function BarberosView({
               {/* QR + Botón Descargar */}
               <div className="flex flex-col items-center gap-2 shrink-0">
                 {(() => {
-                  const qrUrl = buildStaffQrUrl(whatsappNumber, currentBoxCode, selectedStaff.name);
+                  const qrUrl = buildStaffQrUrl(activeWhatsapp, currentBoxCode, selectedStaff.name);
                   return (
                     <>
                       <div className="bg-[#f3ece1] p-2 w-28 h-28 sm:w-32 sm:h-32">
@@ -509,8 +518,8 @@ export default function BarberosView({
                   isSelected={false}
                   onClick={() => handleSelectTab(staff.id)}
                   qrUrl={
-                    whatsappNumber
-                      ? buildStaffQrUrl(whatsappNumber, currentBoxCode, staff.name)
+                    activeWhatsapp
+                      ? buildStaffQrUrl(activeWhatsapp, currentBoxCode, staff.name)
                       : ""
                   }
                   accentColor={terms.accentColor}

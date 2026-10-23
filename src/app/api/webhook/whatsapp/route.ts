@@ -35,9 +35,20 @@ interface WebhookPayload {
   };
 }
 
+/**
+ * Normaliza el nombre de evento de Evolution API para comparación.
+ * Evolution v2 con webhookByEvents=true envía "MESSAGES_UPSERT"
+ * Sin webhookByEvents envía "messages.upsert"
+ * Ambos se normalizan a "messagesupsert" para comparar.
+ */
+function normalizeEvent(event: string | undefined): string {
+  return (event || "").toLowerCase().replace(/[_.]/g, "");
+}
+
 async function processMessage(payload: WebhookPayload) {
-  // Validar evento y mensaje
-  if (payload.event !== "messages.upsert") {
+  // Validar evento y mensaje — acepta ambos formatos de Evolution API v2
+  // byEvents=true: "MESSAGES_UPSERT" | byEvents=false: "messages.upsert"
+  if (normalizeEvent(payload.event) !== "messagesupsert") {
     return;
   }
 
@@ -447,7 +458,9 @@ export async function POST(request: NextRequest) {
   // Procesar ANTES de retornar para garantizar que Vercel no mate el proceso
   // Con delay eliminado y DB ops en paralelo, esto toma <500ms
   try {
-    if (payload.event === "connection.update") {
+    // Normalizar evento para manejar ambos formatos de Evolution API v2
+    const normalizedEvent = normalizeEvent(payload.event);
+    if (normalizedEvent === "connectionupdate") {
       const evolutionInstance = payload.instance;
       const connectionState = payload.data?.state;
       const whatsappConnectedNumber = payload.data?.statusReason || payload.data?.phone || null;
