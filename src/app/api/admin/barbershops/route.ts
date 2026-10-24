@@ -76,9 +76,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Configurar webhook automático apuntando a producción
-    const protocol = request.headers.get("x-forwarded-proto") || "https";
-    const host = request.headers.get("host") || "barberos-rho-henna.vercel.app";
-    const webhookUrl = `${protocol}://${host}/api/webhook/whatsapp`;
+    const host = request.headers.get("host") || "";
+    const isLocal = host.includes("localhost") || host.includes("127.0.0.1");
+    const webhookUrl = isLocal
+      ? "https://www.barberosplus.com/api/webhook/whatsapp"
+      : `https://${host}/api/webhook/whatsapp`;
     await configureEvolutionWebhook(evolutionInstanceName, webhookUrl);
 
     const trialEndsAt = new Date();

@@ -100,14 +100,16 @@ export async function configureEvolutionWebhook(instanceName: string, webhookUrl
     const response = await axios.post(
       url,
       {
-        enabled: true,
-        url: webhookUrl,
-        webhookByEvents: true,
-        webhookBase64: false,
-        events: [
-          "MESSAGES_UPSERT",
-          "CONNECTION_UPDATE"
-        ],
+        webhook: {
+          enabled: true,
+          url: webhookUrl,
+          byEvents: false,
+          base64: false,
+          events: [
+            "MESSAGES_UPSERT",
+            "CONNECTION_UPDATE"
+          ],
+        },
       },
       {
         headers: {
