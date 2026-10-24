@@ -72,11 +72,30 @@ async function processMessage(payload: WebhookPayload) {
   const remoteJid = payload.data.key.remoteJid;
   const whatsapp = remoteJid.replace("@s.whatsapp.net", "");
 
-  // Buscar barbería usando la instancia del webhook, con fallback
+  // Buscar barbería usando la instancia del webhook
   const evolutionInstance = payload.instance;
-  const barbershop = evolutionInstance
-    ? await prisma.barbershop.findFirst({ where: { evolutionInstance } })
-    : await prisma.barbershop.findFirst();
+  let barbershop: any = null;
+
+  if (evolutionInstance) {
+    // Si hay múltiples o una sola, buscamos primero si coincide el currentBoxCode en el mensaje
+    const candidates = await prisma.barbershop.findMany({
+      where: { evolutionInstance },
+      orderBy: { createdAt: "desc" },
+    });
+
+    if (candidates.length > 0) {
+      // Buscar si el texto del mensaje incluye el código de caja de alguna de las barberías asociadas
+      const upperMessage = messageText.toUpperCase();
+      const codeMatch = candidates.find(
+        (c) => c.currentBoxCode && upperMessage.includes(c.currentBoxCode.toUpperCase())
+      );
+      barbershop = codeMatch || candidates[0];
+    }
+  }
+
+  if (!barbershop) {
+    barbershop = await prisma.barbershop.findFirst({ orderBy: { createdAt: "desc" } });
+  }
 
   if (!barbershop) {
     console.error("[Webhook WhatsApp] No se encontró ninguna barbería para la instancia:", evolutionInstance);

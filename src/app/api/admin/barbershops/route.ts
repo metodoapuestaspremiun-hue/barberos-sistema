@@ -223,7 +223,21 @@ export async function PATCH(request: NextRequest) {
     if (vertical !== undefined) updateData.vertical = vertical;
     
     if (whatsappNumber !== undefined) {
-      updateData.whatsappNumber = normalizeWhatsapp(whatsappNumber);
+      const normalized = normalizeWhatsapp(whatsappNumber);
+      updateData.whatsappNumber = normalized;
+      const newInstanceName = `barber_${normalized}`;
+      updateData.evolutionInstance = newInstanceName;
+
+      // Crear instancia en Evolution y configurar su webhook de forma segura
+      try {
+        await createEvolutionInstance(newInstanceName);
+        const protocol = request.headers.get("x-forwarded-proto") || "https";
+        const host = request.headers.get("host") || "barberos-rho-henna.vercel.app";
+        const webhookUrl = `${protocol}://${host}/api/webhook/whatsapp`;
+        await configureEvolutionWebhook(newInstanceName, webhookUrl);
+      } catch (e) {
+        console.error("[Admin PATCH] Error creating/configuring evolution instance:", e);
+      }
     }
 
     const updated = await prisma.barbershop.update({
